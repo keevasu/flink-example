@@ -45,17 +45,17 @@ public class FlinkApplicationPerformanceTestWithThreads implements Runnable{
 	@Override
 	public void run() {
 		performanceTest();
-		System.out.println("Count "+ Thread.currentThread().getId());
+		//System.out.println("Count "+ Thread.currentThread().getId());
 	}
 
 	@Test
 	public void testing(){
 		Thread object = null;
-		for(int i=0; i<1;i++) {
+		for(int i=0; i<3;i++) {
 			object = new Thread(new FlinkApplicationPerformanceTestWithThreads());
 			object.start();
 			try{
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch (Exception e){}
 		}
 		try{

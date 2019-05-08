@@ -47,7 +47,7 @@ public class PostionsPublisher {
 
     public String producer(int ref_id) {
         final String TOPIC_PRICES = properties.getTopic_prices();
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 100000; i++) {
             int tierAccountId = rand.nextInt(300) + 1;
             int valuableitem_id = Math.abs(rand.nextInt(1000) + 1);
             double startLong = rand.nextInt(100) + 1;
