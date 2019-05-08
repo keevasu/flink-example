@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: position-generator
+  labels:
+    app: position-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: position-generator
+  template:
+    metadata:
+      labels:
+        app: position-generator
+    spec:
+      containers:
+        - name: position-generator
+          image: repo/image:tag
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/info
+              port: 8080
+              initialDelaySeconds: 300
+              periodSeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              initialDelaySeconds: 300
+              periodSeconds: 60
+          env:
+            - name: SPRING_CLOUD_APPLICATION_GUID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.uid
+            - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
+              value: "kafka:9092"
+            - name: SPRING_CLOUD_STREAM_KAFKA_STREAMS_BINDER_BROKERS
+              value: "kafka:9092"
+            - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES
+              value: "kafka-sk:9092"
+            - name: SPRING_CLOUD_STREAM_KAFKA_STREAMS_BINDER_ZK_NODES
+              value: "kafka-sk:9092"
+          args: [
+            "--server.port=8080",
+            "--spring.cloud.stream.bindings.output.destination=raw-positions",
+            "--spring.application.name=position-generator",
+            "--spring.cloud.dataflow.stream.app.type=source",
+            "--spring.cloud.dataflow.stream.app.label=position-generator",
+            "--spring.cloud.dataflow.stream.name=position-stream",
+            "--spring.cloud.stream.metrics.properties=spring.application.name,spring.application.index,spring.cloud.application.*,spring.cloud.dataflow.*",
+            "--spring.metrics.export.triggers.application.includes-integration**",
+            "--spring.cloud.stream.metrics.key=position-stream.position-generator.${spring.cloud.application.guid}",
+            "--spring.cloud.stream.bindings.output.producer.requiredGroups=position-stream",
+            "--endpoints.health.sensitive=false",
+            "--endpoints.info.sensitive=false",
+            "--management.endpoints.health.show-details=always",
+            "--management.endpoints.info.show-details=always",
+            "--management.endpoints.web.exposure.include=*",
+            "--management.metrics.export.influx.db=myinfluxdb",
+            "--management.metrics.export.influx.enabled=true",
+            "--management.metrics.export.influx.uri=http://influxdb:8086",
+            "--spring.cloud.config.enabled=false"
+          ]
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: position-generator
+spec:
+  selector:
+    app: position-generator
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080

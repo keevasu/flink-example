@@ -1,0 +1,21 @@
+spring:
+  influxdb:
+    url: http://localhost:8086
+    username: prices
+    password: prices
+    database: risk
+    measurement: prices
+    retention-policy: autogen
+    chunk-size: 10
+    connect-timeout: 20
+    read-timeout: 20
+    write-timeout: 20
+    gzip: true
+kafka:
+    connection:
+      topic_prices: positions
+      topic_app_statuses: margin-rg-stats
+      bootstarp_server_config: 172.26.28.8:9092
+      key_serializer_class_config: org.apache.kafka.common.serialization.StringSerializer
+      value_serializer_class_config: org.apache.kafka.common.serialization.StringSerializer
+      acks_config: 0
