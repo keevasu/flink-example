@@ -51,11 +51,11 @@ public class FlinkApplicationPerformanceTestWithThreads implements Runnable{
 	@Test
 	public void testing(){
 		Thread object = null;
-		for(int i=0; i<3;i++) {
+		for(int i=0; i<30;i++) {
 			object = new Thread(new FlinkApplicationPerformanceTestWithThreads());
 			object.start();
 			try{
-				Thread.sleep(1000);
+				Thread.sleep(1);
 			} catch (Exception e){}
 		}
 		try{

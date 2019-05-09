@@ -27,7 +27,7 @@ public class PostionsPublisher {
 
     private KafkaProducer<String, Position> kafkaProducer;
     //private KafkaProducer<String, Status> statusProducer;
-    private ProducerRecord<String, Position> record = null;
+    //private ProducerRecord<String, Position> record = null;
     private JsonSerde<Position> serde = new JsonSerde<>(Position.class);
     //private JsonSerde<Status> serdeStatus = new JsonSerde<>(Status.class);
 
@@ -47,7 +47,7 @@ public class PostionsPublisher {
 
     public String producer(int ref_id) {
         final String TOPIC_PRICES = properties.getTopic_prices();
-        for (int i = 1; i <= 100000; i++) {
+        for (int i = 1; i <= 10000; i++) {
             int tierAccountId = rand.nextInt(300) + 1;
             int valuableitem_id = Math.abs(rand.nextInt(1000) + 1);
             double startLong = rand.nextInt(100) + 1;
@@ -69,6 +69,8 @@ public class PostionsPublisher {
 
             Serializer<Position> serializer = new JsonSerde<>(Position.class).serializer();
             //byte[] m = serializer.serialize(null, p);
+
+            ProducerRecord<String, Position> record = null;
 
             record = new ProducerRecord<>(TOPIC_PRICES, String.format("%s %s", ref_id, valuableitem_id), p);
             kafkaProducer.send(record, new Callback() {
